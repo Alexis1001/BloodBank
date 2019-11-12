@@ -26,4 +26,11 @@ Route.group(() => {
   Route.post('user/login','UserController.login');
   Route.post('user/resetPassword','UserController.resetPassword');
 
+  //donador 
+  Route.post('user/score','ScoreQuizController.store');
+  Route.post('user/appointment','MedicalAppointMentController.store');
+  Route.delete('user/appointment/delete/:id','MedicalAppointMentController.destroy');
+  Route.put('user/appointment/update/:id','MedicalAppointMentController.update');
+  Route.get('user/appointment/all','MedicalAppointMentController.index');
+
 }).prefix('api/v1/');

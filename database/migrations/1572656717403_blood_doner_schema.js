@@ -10,6 +10,7 @@ class BloodDonerSchema extends Schema {
       table.string('bloodType').notNullable()
       table.string('curp').notNullable();
       table.integer('id_user_data').unsigned().references('id').inTable('user_data')
+      
       table.timestamps()
     })
   }

@@ -4,11 +4,10 @@
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
-const service=use('App/services/roles')
+
 const User=use('App/Models/User');
 const DataUser=use('App/Models/UserDatum');
 const Medico=use('App/Models/Medico');
-const Promoter=use('App/Models/Promoter');
 const BloodDoner=use('App/Models/BloodDoner');
 const Administrator=use('App/Models/Administrator');
 const Recepcionist=use('App/Models/Recepcionist');
@@ -40,22 +39,60 @@ class UserController {
    */
   async create ({ request, response, view }) {
   }
+  
+  async login({request,response,auth}){
+    const data=request.all();
+    const token = await auth.attempt(data.email,data.password);
+    const user =await User.findByOrFail('email',data.email);
+    if(user){
+      const userData=await DataUser.findByOrFail('id_user',user.id)
+      if(userData.rol==1){
+        try{
+         const medico= await Medico.findByOrFail('id_user_data',userData.id);
+         return response.json({token,medico});
+        }catch(exception){
+         return response.status(404);  
+        }
+      }
+     
+      if(userData.rol==2){
+        try{
+          const bloodDoner= await BloodDoner.findByOrFail('id_user_data',userData.id);
+          return response.json({token,bloodDoner});
+         }catch(exception){
+          return response.status(404);  
+         }
+      }
+     
+      if(userData.rol==3){
+        try{
+          const administrator= await Administrator.findByOrFail('id_user_data',userData.id);
+          return response.json({token,administrator});
+         }catch(exception){
+          return response.status(404);  
+         }
+      }
 
-  /**
-   * Create/save a new user.
-   * POST users
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
+      if(userData.rol==4){
+        try{
+          const recepcionist= await Recepcionist.findByOrFail('id_user_data',userData.id);
+          return response.json({token,recepcionist});
+         }catch(exception){
+          return response.status(404);  
+         }
+      }
+
+      else{
+        return response.status(404).json({message:'not found'});
+      }
+      
+    }
+  }
+  
   async store ({ request, response }) {
     const data=request.all();
-
     const user =new User();
     const dataUser=new DataUser();
-    
-    
      //fields user
      user.userName=data.userName
      user.userFirtsName=data.userFirtsName;
@@ -92,20 +129,10 @@ class UserController {
        console.log("medico espciality "+data.speciality);
        console.log("medico id_user_data "+dataUser.id)
        await medico.save();
-       return response.json({user,dataUser,medico});
+       return this.login(...arguments);
      }
-     if(data.rol==2){
-      await user.save();
-      dataUser.id_user=user.id;
-      await dataUser.save();
-      console.log("soy promoter ");
-      const promoter=new Promoter();
-      promoter.id_user_data=dataUser.id;
-      console.log("promoter "+dataUser.id);  
-      await promoter.save(); 
-      return response.json({user,dataUser,promoter});    
-    }
-    if(data.rol==3){
+     
+    if(data.rol==2){
       await user.save();
       dataUser.id_user=user.id;
       await dataUser.save();
@@ -118,9 +145,9 @@ class UserController {
       console.log("curp "+data.curp); 
       console.log("doner "+dataUser.id);
       await bloodDoner.save();
-      return response.json({user,dataUser,bloodDoner});
+      return this.login(...arguments);
     }
-    if(data.rol==4){
+    if(data.rol==3){
       await user.save();
       dataUser.id_user=user.id;
       await dataUser.save();
@@ -129,9 +156,9 @@ class UserController {
       administrator.id_user_data=dataUser.id;
       console.log("administrator "+dataUser.id);
       await administrator.save();
-      return response.json({user,dataUser,administrator});    
+      return this.login(...arguments);   
     }
-    if(data.rol==5){
+    if(data.rol==4){
       await user.save();
       dataUser.id_user=user.id;
       await dataUser.save();
@@ -140,7 +167,7 @@ class UserController {
       recepcionist.id_user_data=dataUser.id;
       console.log("recepcionist "+dataUser.id); 
       await recepcionist.save();
-      return response.json({user,dataUser,recepcionist}); 
+      return this.login(...arguments); 
     }
     else{
       response.json({message:'error not sucessfull'})
@@ -148,58 +175,6 @@ class UserController {
 
   }
 
-  async login({request,response,auth}){
-    const data=request.all();
-    const token = await auth.attempt(data.email,data.password);
-    const user =await User.findByOrFail('email',data.email);
-    if(user){
-      const userData=await DataUser.findByOrFail('id_user',user.id)
-      if(userData.rol==1){
-        try{
-         const medico= await Medico.findByOrFail('id_user_data',userData.id);
-         return response.json({token,medico});
-        }catch(exception){
-         return response.status(404);  
-        }
-      }
-      if(userData.rol==2){
-        try{
-          const promoter= await Promoter.findByOrFail('id_user_data',userData.id);
-          return response.json({token,promoter});
-         }catch(exception){
-          return response.status(404);  
-         }
-
-      }
-      if(userData.rol==3){
-        try{
-          const bloodDoner= await BloodDoner.findByOrFail('id_user_data',userData.id);
-          return response.json({token,bloodDoner});
-         }catch(exception){
-          return response.status(404);  
-         }
-      }
-      if(userData.rol==4){
-        try{
-          const administrator= await Administrator.findByOrFail('id_user_data',userData.id);
-          return response.json({token,administrator});
-         }catch(exception){
-          return response.status(404);  
-         }
-      }
-      if(userData.rol==5){
-        try{
-          const recepcionist= await Recepcionist.findByOrFail('id_user_data',userData.id);
-          return response.json({token,recepcionist});
-         }catch(exception){
-          return response.status(404);  
-         }
-      }
-      else{
-        return response.status(404).json({message:'not found'});
-      }
-    }
-  }
 
   async resetPassword ({ request, response, auth }) {
     const user = await auth.getUser();
