@@ -104,14 +104,15 @@ class UserController {
      dataUser.movilPhone=data.movilPhone;
      dataUser.dateBirth=data.dateBirth;
      dataUser.rol=data.rol;
-     dataUser.status=data.status;
      data.status=false;
+     dataUser.status=data.status;
 
      console.log("name "+data.userName);
      console.log("apellido 1 "+data.userFirtsName);
      console.log("apellido 2 "+data.userLastName);
      console.log("email "+data.email);
      console.log("password "+data.password);
+     console.log("-----------");
      console.log("sex "+data.sex);
      console.log("movil "+data.movilPhone);
      console.log("data Birth "+data.dateBirth);
@@ -119,6 +120,7 @@ class UserController {
      console.log("status "+data.status);
 
      if(data.rol==1){
+       console.log("entro perro rol 1");
        await user.save();
        dataUser.id_user=user.id;
        await dataUser.save();
