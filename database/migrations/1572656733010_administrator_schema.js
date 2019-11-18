@@ -7,7 +7,7 @@ class AdministratorSchema extends Schema {
   up () {
     this.create('administrators', (table) => {
       table.increments()
-      table.integer('id_user_data').unsigned().references('id').inTable('user_data')
+      table.integer('id_blood_doner').unsigned().references('id').inTable('blood_doners')
       table.timestamps()
     })
   }

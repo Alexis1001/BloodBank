@@ -8,13 +8,20 @@ const BloodDoner=use('App/Models/BloodDoner');
 const MedicalAppointMent=use('App/Models/MedicalAppointment');
 const ScoreQuiz=use('App/Models/ScoreQuiz');
 const UserData=use('App/Models/UserDatum');
+const Database = use('Database');
 
 class MedicalAppointMentController {
  
   async index ({ request, response, view, auth }) {
     const user =await auth.getUser(); 
-    const medicalappointments=await MedicalAppointMent.all();
-    return response.json({medicalappointments});
+    const medicalAppointMent =await Database.table('users')
+    .innerJoin('user_data',user.id, 'user_data.id_user')
+    .where('users.email',user.email)
+    .innerJoin('blood_doners','user_data.id','blood_doners.id_user_data')
+    .innerJoin('medical_appointments','blood_doners.id','medical_appointments.id_blood_doner')
+    .select('medical_appointments.id','userName','UserFirtsName','UserLastName','sex','movilPhone','bloodType','date','time',
+    'medical_appointments.status');
+    return response.json({medicalAppointMent})
   }
 
   
@@ -38,7 +45,18 @@ class MedicalAppointMentController {
     }
     else{
       await appointMent.save();
-      return response.json({doner,appointMent,user});  
+     
+      const doner_cita=({
+        Name:user.userName,
+        FirstName:user.userFirtsName,
+        LastName:user.userLastName,
+        sex:userData.sex,
+        movil:userData.movilPhone,
+        blood:doner.bloodType,
+        date:appointMent.date,
+        time:appointMent.time,
+      });
+      return response.json({doner_cita});  
     }
     
   }
@@ -57,6 +75,7 @@ class MedicalAppointMentController {
     const data=request.all();
     const appoint_Ment= await MedicalAppointMent.find(id);
     if(appoint_Ment){
+
       if(data.time==null&&data.date!=null){
         appoint_Ment.merge({
         date:data.date,
@@ -64,6 +83,7 @@ class MedicalAppointMentController {
         await appoint_Ment.save();
         return response.json({appoint_Ment});
       }
+
       if(data.time!=null&&data.date==null){
         appoint_Ment.merge({
           time:data.time,
@@ -72,10 +92,19 @@ class MedicalAppointMentController {
         return response.json({appoint_Ment});
       }
 
+      if(data.time!=null&&data.date!=null){
+        appoint_Ment.merge({
+          time:data.time,
+          date:data.date,
+        });
+        await appoint_Ment.save();
+        return response.json({appoint_Ment});
+      }
+
     }
 
     else{
-      return response.json({error:'not exist product'});       
+      return response.json({error:'not exist Medical Appoinment'});       
     }
 
   }
@@ -92,8 +121,29 @@ class MedicalAppointMentController {
       return response.json({message:'medical appint ment not exist'});
     }
     
-  
   }
+
+  async lastApointment({response,auth,request}){
+    const user=await auth.getUser();
+    var fecha = new Date(); //Fecha actual
+    var mes = fecha.getMonth()+1; //obteniendo mes
+    var dia = fecha.getDate(); //obteniendo dia
+    var ano = fecha.getFullYear(); //obteniendo año
+    var date=ano+"-"+mes+"-"+dia;
+    console.log("fecha actual "+date);
+    
+    const medicalAppointMent =await Database.table('users')
+    .innerJoin('user_data',user.id,'user_data.id_user')
+    .where('users.email',user.email)
+    .innerJoin('blood_doners','user_data.id','blood_doners.id_user_data')
+    .innerJoin('medical_appointments','blood_doners.id','medical_appointments.id_blood_doner')
+    .where('medical_appointments.date',date)
+    .select('medical_appointments.id','userName','UserFirtsName','UserLastName','sex','movilPhone','bloodType','date','time',
+    'medical_appointments.status');
+    return response.json({medicalAppointMent});
+
+  }
+  
   
 }
 
