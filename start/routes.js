@@ -43,18 +43,28 @@ Route.group(() => {
   //obtener el historial de  porcetajes de encuesta realizada por cada donador
   Route.get('user/score/all','ScoreQuizController.index');
 
-
   //[donador citas]
-  //gerar cita
+  //generar cita
   Route.post('user/appointment','MedicalAppointMentController.store');
   //borrar cita
   Route.delete('user/appointment/delete/:id','MedicalAppointMentController.destroy');
   //actualizar cita
   Route.put('user/appointment/update/:id','MedicalAppointMentController.update');
-  //ver todas las citas del deterinado usuario
+  //ver todas las citas del determinado usuario
   Route.get('user/appointment/all','MedicalAppointMentController.index');
  //ver la ultimacita generada
   Route.get('user/appointment/lastAppointment','MedicalAppointMentController.lastApointment');
+
+  //[promotor]
+  //generar  promociones
+  Route.post('user/promoter','PromoterController.create');
+  // ver todad las promociones de la fecha actual  
+  Route.get('user/promoter','PromoterController.index')
+  // eliminar publicacion 
+  Route.delete('user/promoter/:id','PromoterController.destroy');
+  // update publicacion 
+  Route.put('user/promoter/:id','PromoterController.update');
+
 
 
 }).prefix('api/v1/');

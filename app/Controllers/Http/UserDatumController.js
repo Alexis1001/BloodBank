@@ -35,14 +35,14 @@ class UserDatumController {
   /**
    * Create/save a new userdatum.
    * POST userdata
-   *
+   * 
    * @param {object} ctx
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
   async store ({ request, response }) {
   }
-
+  
   /**
    * Display a single userdatum.
    * GET userdata/:id
