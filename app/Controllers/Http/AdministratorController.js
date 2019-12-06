@@ -10,6 +10,9 @@ const BloodDoner=use('App/Models/BloodDoner');
 const Database = use('Database');
 const User=use('App/Models/User');
 const ScoreQuiz=use('App/Models/ScoreQuiz');
+const accountSid = 'AC306b55b6d8abab1f13d7fb25dcf1443d';
+const authToken = 'bcbc1e37d75690bf8d8ec97661c199c8';
+const client = require('twilio')(accountSid, authToken);
 
 class MasterController {
   
@@ -22,7 +25,7 @@ class MasterController {
       .innerJoin('user_data','users.id', 'user_data.id_user')
       .innerJoin('blood_doners','user_data.id','blood_doners.id_user_data')
       //.where('user_data.sex','hombre')
-      .select('blood_doners.id','userName','UserFirtsName','UserLastName','rol','sex','movilPhone');
+      .select('blood_doners.id','userName','UserFirtsName','UserLastName','rol','sex','movilPhone','users.email');
       return response.json({user_all});
     }
 
@@ -50,6 +53,7 @@ class MasterController {
         rol:data.rol,
       });
       user_data.save();
+      this.sendMessage(user_data.movilPhone,data.rol);
       return response.json({user_data});
     }
     else{
@@ -57,6 +61,29 @@ class MasterController {
     }
     
   }
+  async sendMessage(numero,rol){
+    console.log("mi numero "+numero+" mi rol "+rol);
+    var mensaje;
+    if(rol==1){
+       mensaje="ahora eres un donador";
+    }
+    if(rol==3){
+      mensaje="ahora eres un promotor";
+    }
+    if(rol==4){
+      mensaje="ahora eres un recepcionista";
+    }
+    //var lada="+52 "+"1"+" "+minumero;
+    var minumero=numero;
+    var lada="+52 "+"1"+" "+minumero;
+    client.messages
+    .create({
+      body: mensaje,
+      from: '+12015845779',
+      to:lada,
+    })
+    .then(message => console.log(message.sid));
+  }  
 
   async destroy ({ params,response,auth}) {
     const user = await auth.getUser();

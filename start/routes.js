@@ -25,8 +25,15 @@ Route.group(() => {
  // users
   Route.post('user/register','UserController.store');
   Route.post('user/login','UserController.login');
-  Route.post('user/resetPassword','UserController.resetPassword');
+  //cambiar de contraseña
+  Route.post('user/changePassword','UserController.changePassword');
+  //olvida su contraseña se le manda correo
+  Route.post('user/forgotPassword','UserController.forgotPassword');
+  //restablcer contraseña
+  Route.post('user/resetpassword','UserController.resetPassword');
   
+  
+
   //[Master]
   // ver todo los donadores 
   Route.get('user/all','AdministratorController.indexDoners');
@@ -34,8 +41,12 @@ Route.group(() => {
   Route.put('user/edit/:id','AdministratorController.updateDoners');
   //eliminar a un donador en epecifico 
   Route.delete('user/delete/:id','AdministratorController.destroy');
-
-
+  // dos pasos insertar 
+  Route.post('user/dospasos','TwoStepController.create');
+  // dos pasos actualizar numero de verificacion
+  Route.put('user/dospasos','TwoStepController.update');
+  // validar numero de verificacion
+  Route.post('user/numberverification','TwoStepController.verificationCodigo');
 
   //[donador encuesta]
   //insertar el porcentaje obtenido en la encuesta por donador
@@ -65,6 +76,7 @@ Route.group(() => {
   // update publicacion 
   Route.put('user/promoter/:id','PromoterController.update');
 
-
+  //Archivos Logs 
+  Route.post('user/logs','LogController.create');
 
 }).prefix('api/v1/');

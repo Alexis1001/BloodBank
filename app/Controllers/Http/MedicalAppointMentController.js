@@ -31,7 +31,6 @@ class MedicalAppointMentController {
   async store ({ request, response ,auth }) {
     const user = await auth.getUser();
     const data=request.all();
-    console.log("generando cita");
     const appointMent =new MedicalAppointMent();
     const userData=await UserData.findByOrFail("id_user",user.id);
     const doner= await BloodDoner.findByOrFail('id_user_data',userData.id);
@@ -44,19 +43,31 @@ class MedicalAppointMentController {
       return response.json({message:'fields empty'});
     }
     else{
+      /*var fecha = new Date(); //Fecha actual
+      var mes = fecha.getMonth()+1; //obteniendo mes
+      var dia = fecha.getDate(); //obteniendo dia
+      var ano = fecha.getFullYear(); //obteniendo año
+      var date=ano+"-"+mes+"-"+dia;
+      console.log("fecha actual "+date);
+      const cita =await Database.table('blood_doners') 
+      .innerJoin('medical_appointments','blood_doners.id','medical_appointments.id_blood_doner')
+      .where('medical_appointments.date',date)
+      .andWhere('medical_appointments.id_blood_doner',doner.id)
+      .select('*');
+      console.log("cita"+cita)*/
+  
       await appointMent.save();
-     
-      const doner_cita=({
-        Name:user.userName,
-        FirstName:user.userFirtsName,
-        LastName:user.userLastName,
-        sex:userData.sex,
-        movil:userData.movilPhone,
-        blood:doner.bloodType,
-        date:appointMent.date,
-        time:appointMent.time,
-      });
-      return response.json({doner_cita});  
+        const doner_cita=({
+          Name:user.userName,
+          FirstName:user.userFirtsName,
+          LastName:user.userLastName,
+          sex:userData.sex,
+          movil:userData.movilPhone,
+          blood:doner.bloodType,
+          date:appointMent.date,
+          time:appointMent.time,
+          });
+        return response.json({doner_cita});
     }
     
   }

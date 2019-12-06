@@ -13,7 +13,6 @@ class ScoreQuizController {
  
   async index ({ request, response, view ,auth}) {
     const user = await auth.getUser();
-    console.log("user id "+user.id);
     const score=await Database.table('users')
     .innerJoin('user_data',user.id,'user_data.id_user')
     .where('users.email',user.email)
@@ -30,11 +29,14 @@ class ScoreQuizController {
   async store ({ request, response ,auth}) {
     const user = await auth.getUser();
     const data=request.all();
+    const user_data=await UserData.findByOrFail('id_user',user.id)
+    
+
     if(data.score==null){
       response.json({message:'fields empty'});
     }
     
-    else{
+    if(user_data.rol==1){
       const userData=await UserData.findByOrFail('id_user',user.id);
       const doner= await BloodDoner.findByOrFail('id_user_data',userData.id);
       const scoreQuiz=new ScoreQuiz();
@@ -53,6 +55,9 @@ class ScoreQuizController {
         date:scoreQuiz.created_at,
       });
       return response.json({donerC});
+    }
+    if(user_data.rol!=1){
+      return response.json({message:'not autorized'});
     }
 
       
