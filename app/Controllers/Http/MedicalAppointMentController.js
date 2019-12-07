@@ -43,19 +43,7 @@ class MedicalAppointMentController {
       return response.json({message:'fields empty'});
     }
     else{
-      /*var fecha = new Date(); //Fecha actual
-      var mes = fecha.getMonth()+1; //obteniendo mes
-      var dia = fecha.getDate(); //obteniendo dia
-      var ano = fecha.getFullYear(); //obteniendo año
-      var date=ano+"-"+mes+"-"+dia;
-      console.log("fecha actual "+date);
-      const cita =await Database.table('blood_doners') 
-      .innerJoin('medical_appointments','blood_doners.id','medical_appointments.id_blood_doner')
-      .where('medical_appointments.date',date)
-      .andWhere('medical_appointments.id_blood_doner',doner.id)
-      .select('*');
-      console.log("cita"+cita)*/
-  
+
       await appointMent.save();
         const doner_cita=({
           Name:user.userName,
@@ -120,6 +108,18 @@ class MedicalAppointMentController {
 
   }
 
+  async theLast({response,auth}){
+    const user = await auth.getUser();
+    const citas=await Database.table('medical_appointments')
+    .innerJoin('blood_doners','blood_doners.id','medical_appointments.id_blood_doner')
+    .where('medical_appointments.id_blood_doner',user.id)
+    .orderBy('medical_appointments.id','desc')
+    .select('medical_appointments.id','medical_appointments.time','medical_appointments.date',
+    'medical_appointments.status','medical_appointments.id_blood_doner')
+
+    return response.json({citas});
+  }
+
   async destroy ({ params, request, response ,auth}) {
     const user=await auth.getUser();
     const id=params.id;
@@ -129,32 +129,11 @@ class MedicalAppointMentController {
       await medicalAppointMent.delete();
       return response.json({medicalAppointMent});
     }else{
-      return response.json({message:'medical appint ment not exist'});
+      return response.json({message:'medical appointment not exist'});
     }
     
   }
 
-  async lastApointment({response,auth,request}){
-    const user=await auth.getUser();
-    var fecha = new Date(); //Fecha actual
-    var mes = fecha.getMonth()+1; //obteniendo mes
-    var dia = fecha.getDate(); //obteniendo dia
-    var ano = fecha.getFullYear(); //obteniendo año
-    var date=ano+"-"+mes+"-"+dia;
-    console.log("fecha actual "+date);
-    
-    const medicalAppointMent =await Database.table('users')
-    .innerJoin('user_data',user.id,'user_data.id_user')
-    .where('users.email',user.email)
-    .innerJoin('blood_doners','user_data.id','blood_doners.id_user_data')
-    .innerJoin('medical_appointments','blood_doners.id','medical_appointments.id_blood_doner')
-    .where('medical_appointments.date',date)
-    .select('medical_appointments.id','userName','UserFirtsName','UserLastName','sex','movilPhone','bloodType','date','time',
-    'medical_appointments.status');
-    return response.json({medicalAppointMent});
-
-  }
-  
   
 }
 

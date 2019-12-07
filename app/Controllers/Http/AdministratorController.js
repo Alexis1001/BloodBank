@@ -24,7 +24,6 @@ class MasterController {
       const user_all =await Database.table('users')
       .innerJoin('user_data','users.id', 'user_data.id_user')
       .innerJoin('blood_doners','user_data.id','blood_doners.id_user_data')
-      //.where('user_data.sex','hombre')
       .select('blood_doners.id','userName','UserFirtsName','UserLastName','rol','sex','movilPhone','users.email');
       return response.json({user_all});
     }
@@ -38,8 +37,6 @@ class MasterController {
   async updateDoners({request,response,auth,params}){
     const user = await auth.getUser();
     const user_datas=await DataUser.findByOrFail('id_user',user.id);
-    console.log("usario master "+user.id);
-    console.log("usuario mastar datos "+user_datas.id);
     const id=params.id;
     const data=request.all();
     const doner= await BloodDoner.find(id);
@@ -73,7 +70,6 @@ class MasterController {
     if(rol==4){
       mensaje="ahora eres un recepcionista";
     }
-    //var lada="+52 "+"1"+" "+minumero;
     var minumero=numero;
     var lada="+52 "+"1"+" "+minumero;
     client.messages
@@ -87,11 +83,7 @@ class MasterController {
 
   async destroy ({ params,response,auth}) {
     const user = await auth.getUser();
-    
-    console.log("hola perro ");
     const user_datas=await DataUser.findByOrFail('id_user',user.id);
-    console.log("usuario master "+user.id+" user name "+user.userName);
-    console.log("usuario mastar datos "+user_datas.id+" user rol "+user_datas.rol);
     const id=params.id;
     const doner= await BloodDoner.find(id);
    

@@ -18,6 +18,8 @@ class LogController {
    * @param {View} ctx.view
    */
   async index ({ request, response, view }) {
+    const logs =await Log.all();
+    return response.json({logs});
   }
 
   /**

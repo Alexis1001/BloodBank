@@ -19,7 +19,6 @@ class PromoterController {
     var dia = fecha.getDate(); //obteniendo dia
     var ano = fecha.getFullYear(); //obteniendo año
     var date=ano+"-"+mes+"-"+dia;
-    console.log("fecha actual ");
     const promotions =await Database.table('promoters')
     .where('date',date)
     .select('*')
@@ -27,23 +26,16 @@ class PromoterController {
   }
 
   async create ({ request, response,auth}) {
-    console.log("aqui ");
     const user = await auth.getUser();
-    console.log("aqui perro");
     const userData=await UserData.findByOrFail('id_user',user.id);
     const doner=await Doner.findByOrFail('id_user_data',userData.id);
     const data = request.all();
-
-    var fecha = new Date(); //Fecha actual
-    var mes = fecha.getMonth()+1; //obteniendo mes
-    console.log("mes "+mes)
-    var dia = fecha.getDate(); //obteniendo dia
-    console.log("dia "+dia)
-    var ano = fecha.getFullYear(); //obteniendo año
-    console.log("anio "+ano);
+    var fecha = new Date(); 
+    var mes = fecha.getMonth()+1; 
+    var dia = fecha.getDate(); 
+    var ano = fecha.getFullYear(); 
     var date=ano+"-"+mes+"-"+dia;
-    console.log("fecha actual "+date);
-
+    
     if(userData.rol!=4){
       return response.json({message:'Not authorized'});
     }
@@ -54,12 +46,7 @@ class PromoterController {
     promotions.image=data.image;
     promotions.date=date;
     promotions.id_blood_doner=doner.id;
-
-    console.log("1 promotions titulo "+promotions.title);
-    console.log("2 promotions description "+promotions.description);
-    console.log("3 promotions image "+promotions.image);
-    console.log("4 promotions fecha actual "+promotions.date);
-    console.log("5 promotions id_blood_doner "+promotions.id_blood_doner);
+    
     var cadena=promotions.title.substring(0,3);
 
     const IMG = request.file('image')

@@ -88,13 +88,13 @@ class UserController {
     const data=request.all();
     const user =new User();
     const dataUser=new DataUser();
-     //fields user
+     
      user.userName=data.userName
      user.userFirtsName=data.userFirtsName;
      user.userLastName=data.userLastName;
      user.email=data.email;
      user.password=data.password;
-     //fileds data users
+
      dataUser.sex=data.sex;
      dataUser.movilPhone=data.movilPhone;
      dataUser.dateBirth=data.dateBirth;
@@ -147,21 +147,29 @@ class UserController {
 
   async changePassword ({ request, response, auth }) {
     const user = await auth.getUser();
-    const { password, newPassword } = request.only(['password', 'newPassword']);
-    
+    const data=request.all();
     const uservalidate = await User.findByOrFail('id',user.id);
-    const passwordCheck = await Hash.verify(password, uservalidate.password);
+    const passwordCheck = await Hash.verify(data.password,uservalidate.password);
 
     if (!passwordCheck) {
       return response
         .status(400)
         .send({ message: { error: 'Incorrect password provided' } })
     }
+    else{
+      if(data.newPassword.match(/[a-z]/g) &&data.newPassword.match( /[A-Z]/g) &&
+      data.newPassword.match( /[0-9]/g) && data.newPassword.match( /[^a-zA-Z\d]/g)&&
+      data.newPassword.length>=8){
+        user.password =data.newPassword
+        await user.save()
+        return response.json({ message:'Password Success'})
+      }
+      else{
+        return response.json({message:'la contrasenia debe de tener mayusculas minusculas numero y caracteres'});  
+      }
 
-    user.password = newPassword
-  
-    await user.save()
-    return response.json({ message: 'Password Success!'})
+    }
+   
   }
 
   async show ({ params, request, response, view }) {

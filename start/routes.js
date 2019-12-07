@@ -64,7 +64,7 @@ Route.group(() => {
   //ver todas las citas del determinado usuario
   Route.get('user/appointment/all','MedicalAppointMentController.index');
  //ver la ultimacita generada
-  Route.get('user/appointment/lastAppointment','MedicalAppointMentController.lastApointment');
+  Route.get('user/appointment/last','MedicalAppointMentController.theLast');
 
   //[promotor]
   //generar  promociones
@@ -78,5 +78,7 @@ Route.group(() => {
 
   //Archivos Logs 
   Route.post('user/logs','LogController.create');
+  Route.get('user/all/logs','LogController.index')  
+
 
 }).prefix('api/v1/');
